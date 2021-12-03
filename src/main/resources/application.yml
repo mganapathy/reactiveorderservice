@@ -1,0 +1,18 @@
+server:
+    port: 8084
+    
+#springdoc:
+#    api-docs:
+#    groups:
+#      enabled: true
+#      path: /swagger-doc/v3/api-docs
+#    
+#    swagger-ui:
+#      path: /swagger-doc/swagger-ui.html
+      
+logging:
+  file.name: d:/tcs/data/elk.log
+  level:
+    '[orderservice]': INFO
+    
+          

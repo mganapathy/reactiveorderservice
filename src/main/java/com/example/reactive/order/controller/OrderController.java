@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,13 +21,18 @@ import com.example.reactive.order.model.Order;
 import com.example.reactive.order.model.OrderEvent;
 import com.example.reactive.order.repository.OrderRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 @RestController
 @RequestMapping("/order")
+
+//private Logger log = LoggerFactory.getlogger(OrderController.class);
+@Slf4j
 public class OrderController {
+	
 //	@Autowired
 //	KafkaTemplate<String, Order> kafkaTemplate;
 ////	
@@ -37,19 +44,24 @@ public class OrderController {
 	// Flux 0 .. N elements
 	
 	private OrderRepository orderRepository;
+
+	private Logger log=LoggerFactory.getLogger(OrderController.class);
 	private static final String TOPIC_NAME = "test_order";
 	public OrderController(OrderRepository orderRepository) {
+		
 		this.orderRepository = orderRepository;
 	}
 	// Flux 0 .. N elements ... list of values
 	@GetMapping("/all")
 	public Flux<Order> getAll(){
+		log.info("order service getAll( api invoked");
 		System.out.println("getAll API called");
 		return orderRepository.findAll();
 	}
 	// Mono 0..1 elements ... single value
 	@GetMapping("/{id}")
 	public Mono<Order> getOrder(@PathVariable("id") final String orderId){
+		log.info("order service getOrder( api invoked");
 		System.out.println("getOrder API called");
 		return orderRepository.findById(orderId);
 	}
@@ -57,9 +69,9 @@ public class OrderController {
 	@GetMapping(value="/events", produces=MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<OrderEvent> getOrderEvents(){
 		System.out.println("getOrderEvents API Called");
-		Mono<Integer> a = Mono.just(1);
-		Integer b = a.block();
-		System.out.println("b === " + a);
+//		Mono<Integer> a = Mono.just(1);
+//		Integer b = a.block();
+//		System.out.println("b === " + a);
 		return orderRepository.findAll()
 		.flatMap(order -> {
 			Flux<Long> interval = Flux.interval(Duration.ofSeconds(2));
